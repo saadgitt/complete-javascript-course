@@ -5,7 +5,7 @@ import Likes from './models/Likes';
 import * as searchView from './views/searchView';
 import * as recipeView from './views/recipeView';
 import * as listView from './views/listView';
-import * as likesView from './views/likesView';
+import * as likesView from './views/likesView.js';
 import { elements, renderLoader, clearLoader } from './views/base';
 
 /** Global state of the app
@@ -139,57 +139,29 @@ elements.shopping.addEventListener('click', e => {
     }
 });
 
+//LIKE CONNTROLLER 
 
-/** 
- * LIKE CONTROLLER
- */
-const controlLike = () => {
-    if (!state.likes) state.likes = new Likes();
+const controlLike = () => 
+{
+    if (!state.likes) //if there is no like yet
+    state.likes= new Likes();
     const currentID = state.recipe.id;
-
-    // User has NOT yet liked current recipe
-    if (!state.likes.isLiked(currentID)) {
-        // Add like to the state
-        const newLike = state.likes.addLike(
-            currentID,
-            state.recipe.title,
-            state.recipe.author,
-            state.recipe.img
-        );
-        // Toggle the like button
-        likesView.toggleLikeBtn(true);
-
-        // Add like to UI list
+    if (!state.likes.isLiked(currentID))
+    {
+        //add like, toggle button and add like to UI
+        const newLike = state.likes.addLike(currentID, state.recipe.title. state.recipe.author, state.recipe.img);
+        likesView.toggleLikebutton(true);
         likesView.renderLike(newLike);
-
-    // User HAS liked current recipe
-    } else {
-        // Remove like from the state
+    }
+    else 
+    {
+        //like clicked again means unlike so.. remove like, toggle button and remove from UI
         state.likes.deleteLike(currentID);
-
-        // Toggle the like button
-        likesView.toggleLikeBtn(false);
-
-        // Remove like from UI list
+        likesView.toggleLikebutton(false);
         likesView.deleteLike(currentID);
     }
     likesView.toggleLikeMenu(state.likes.getNumLikes());
-};
-
-// Restore liked recipes on page load
-window.addEventListener('load', () => {
-    state.likes = new Likes();
-    
-    // Restore likes
-    state.likes.readStorage();
-
-    // Toggle like menu button
-    likesView.toggleLikeMenu(state.likes.getNumLikes());
-
-    // Render the existing likes
-    state.likes.likes.forEach(like => likesView.renderLike(like));
-});
-
+}
 
 // Handling recipe button clicks
 elements.recipe.addEventListener('click', e => {
@@ -207,7 +179,7 @@ elements.recipe.addEventListener('click', e => {
         // Add ingredients to shopping list
         controlList();
     } else if (e.target.matches('.recipe__love, .recipe__love *')) {
-        // Like controller
+        // Like controller call
         controlLike();
     }
 });
